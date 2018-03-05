@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"  crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js" crossorigin="anonymous"></script>
+    </head>
+    <body class="container-fluid">
+
+        <div class="row col-md-12" style="border-bottom: 5px solid black;">
+                <h1 class="col-md-11 text-center"> Timespan Game</h1>
+                <button class="col-md-1 btn btn-link" type="button">Log Out</button>
+        </div>
+
+
+        <div id="GamePlayBtn" class="col-md-12" style="margin-top: 30px">
+          <p class="text-center">
+            <button id="PlayGame" class="btn btn-primary btn-lg"> Play </button>
+          </p>
+        </div>
+
+        <div id="GamePlayLbl" class="col-md-12" style="margin-top: 30px; display:none">
+          <p class="text-center">
+           <h2>Thank you for playing today!</h2>
+        </p>
+        </div>
+
+     <div class="col-md-12">
+
+   
+        <div class="col-md-5">
+                <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Time</th>
+                            <th>Time Span</th>
+                            <th>Rank</th>
+                          </tr>
+                        </thead>
+                          <tbody data-bind="foreach: userTimeSpans">
+                            <tr>
+                                <td data-bind="text: Name"></td>
+                                <td data-bind="text: Time"></td>
+                                <td data-bind="text: Span"></td>
+                                <td data-bind="text: Rank"></td>
+                            </tr>
+                        </tbody>
+                      </table>
+        </div>
+      </div>
+
+    </body>
+</html>
+
+<script>
+
+$( document ).ready(function() {
+
+  var myViewModel = {
+      userTimeSpans : ko.observableArray()
+  };
+
+  ko.applyBindings(myViewModel);
+
+  debugger; 
+
+  
+
+  $.ajax({
+    url : '/timespanMenu',
+    type : 'GET',
+    dataType:'json',
+    success : function(data) {              
+      debugger;
+        for(i = 0; i < data.length; i++)
+        {
+          var item = {
+            Name: data[i].Name,
+            Time: data[i].Time,
+            Span: data[i].Span,
+            Rank: data[i].Rank
+          }
+
+          myViewModel.userTimeSpans.push(item); 
+
+        }
+
+    },
+    error : function(request,error)
+    {
+       // alert("Request: "+JSON.stringify(request));
+    }
+});
+
+
+$.ajax({
+    url : '/checkIfUserPlayed',
+    type : 'GET',
+    dataType:'json',
+    success : function(data) {              
+      debugger;
+     if(data == true)
+     {
+        $('#GamePlayBtn').hide();
+        $('#GamePlayLbl').show();
+     }
+    },
+    error : function(request,error)
+    {
+       // alert("Request: "+JSON.stringify(request));
+    }
+});
+
+
+
+$('#PlayGame').click(function(){
+  debugger;
+  $.ajax({
+    url : '/saveTimeSpan',
+    type : 'POST',
+    dataType:'json',
+    success : function(data) {              
+      debugger;
+       
+    
+      location.reload();
+     },
+    error : function(request,error)
+    {
+       // alert("Request: "+JSON.stringify(request));
+    }
+});
+
+});
+
+
+
+});
+
+</script>
